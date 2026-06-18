@@ -1,0 +1,142 @@
+/* Base Styles */
+:root {
+  --primary: #1976d2;
+  --dark: #333;
+  --light: #f4f7f6;
+  --whatsapp: #25d366;
+  --danger: #d32f2f;
+  --success: #2e7d32;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: var(--light);
+  margin: 0;
+  color: var(--dark);
+}
+
+.app-container { min-height: 100vh; }
+
+.top-nav {
+  background: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.top-nav a { text-decoration: none; color: var(--primary); font-weight: 600; }
+.admin-link { background: var(--primary); color: white; padding: 8px 15px; border-radius: 5px; }
+
+.page-container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+.page-title { text-align: center; color: var(--primary); margin-bottom: 30px; }
+
+/* Home Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.card-preview {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--dark);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  text-align: center;
+}
+.card-preview:hover { transform: translateY(-5px); }
+.card-icon { font-size: 3rem; margin-bottom: 10px; }
+.view-btn { display: block; margin-top: 15px; color: var(--primary); font-weight: bold; }
+
+/* Business Card View */
+.full-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.card-header {
+  background: var(--primary);
+  color: white;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.logo-icon { font-size: 2.5rem; }
+.center-name { font-size: 1.2rem; font-weight: 600; }
+
+.card-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  padding: 40px;
+}
+.doc-name { font-size: 2rem; margin: 0 0 10px 0; color: var(--dark); }
+.doc-title { font-size: 1.2rem; color: var(--primary); margin: 0 0 30px 0; font-weight: 500; }
+
+.contact-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+.contact-item { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--dark); font-size: 1.1rem; }
+.icon { font-size: 1.3rem; }
+
+.quick-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.btn-call { background: var(--primary); }
+.btn-whatsapp { background: var(--whatsapp); }
+.btn-email { background: var(--success); }
+
+.qr-section { display: flex; gap: 20px; align-items: center; }
+.qr-box { text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px; }
+.qr-box p { margin: 10px 0 0 0; font-size: 0.9rem; color: #666; font-weight: 600; }
+
+/* Admin Styles */
+.admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.admin-form-box, .admin-list-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.admin-form-box h3, .admin-list-box h3 { margin-top: 0; color: var(--primary); }
+
+form { display: flex; flex-direction: column; gap: 15px; }
+input, textarea {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+
+.form-buttons { display: flex; gap: 10px; }
+.btn-save { background: var(--success); }
+.btn-cancel { background: #757575; }
+.btn-edit { background: #ff9800; padding: 8px 15px; font-size: 0.9rem; }
+.btn-delete { background: var(--danger); padding: 8px 15px; font-size: 0.9rem; }
+
+.list-items { display: flex; flex-direction: column; gap: 10px; }
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+.list-item div { display: flex; flex-direction: column; }
+.list-item small { color: #777; }
+.list-actions { display: flex; gap: 8px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-body { grid-template-columns: 1fr; }
+  .admin-layout { grid-template-columns: 1fr; }
+  .qr-section { justify-content: center; }
+}
