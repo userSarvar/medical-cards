@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 import { auth } from "../firebase";
 import { getCards, deleteCard } from "../db";
 
@@ -54,6 +54,16 @@ export default function AdminDashboard() {
     a.download = `${card.name.replace(/\s+/g, "_")}.vcf`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const downloadQR = (card) => {
+    const canvas = document.getElementById("qr-download-canvas");
+    if (!canvas) return;
+    const url = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${card.name.replace(/\s+/g, "_")}_QR.png`;
+    a.click();
   };
 
   return (
@@ -159,7 +169,8 @@ export default function AdminDashboard() {
             <h2>{qrCard.name}</h2>
             <p className="modal-url">{BASE_URL}/cards/{qrCard.id}</p>
             <div className="qr-container">
-              <QRCodeSVG
+              <QRCodeCanvas
+                id="qr-download-canvas"
                 value={`${BASE_URL}/cards/${qrCard.id}`}
                 size={220}
                 bgColor="#ffffff"
@@ -168,6 +179,9 @@ export default function AdminDashboard() {
               />
             </div>
             <div className="modal-actions">
+              <button className="btn btn-primary" onClick={() => downloadQR(qrCard)}>
+                QR Yuklab olish
+              </button>
               <button className="btn btn-vcf" onClick={() => { downloadVCard(qrCard); setQrCard(null); }}>
                 vCard Yuklab olish
               </button>
