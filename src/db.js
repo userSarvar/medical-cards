@@ -25,7 +25,7 @@ import {
   collection, getDocs, addDoc, updateDoc,
   deleteDoc, doc, getDoc
 } from "firebase/firestore";
-import { db, storage } from "./firebase";
+
 
 const COL = "business_cards";
 
