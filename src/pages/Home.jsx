@@ -1,32 +1,67 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getCards } from '../db';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCards } from "../db";
+import { FaInstagram, FaTelegram, FaYoutube, FaTiktok, FaFacebook, FaGlobe, FaWhatsapp } from "react-icons/fa";
+
+const SOCIAL_ICONS = {
+  instagram: FaInstagram,
+  telegram: FaTelegram,
+  youtube: FaYoutube,
+  tiktok: FaTiktok,
+  facebook: FaFacebook,
+  website: FaGlobe,
+  whatsapp: FaWhatsapp,
+};
 
 export default function Home() {
   const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCards();
+    getCards().then(data => {
       setCards(data);
-    };
-    fetchData();
+      setLoading(false);
+    });
   }, []);
 
+  if (loading) return <div className="loading-screen">Yuklanmoqda...</div>;
+
   return (
-    <div className="page-container">
-      <h1 className="page-title">Our Specialists</h1>
-      <div className="cards-grid">
+    <div className="home-page">
+      <header className="home-header">
+        <h1>Biznes Kartalar</h1>
+        <p>Barcha kompaniyalar ro'yxati</p>
+      </header>
+
+      <div className="home-grid">
         {cards.map(card => (
-          <Link to={`/card/${card.id}`} key={card.id} className="card-preview">
-            <div className="card-icon">👨‍️</div>
-            <h3>{card.name}</h3>
-            <p>{card.title}</p>
-            <span className="view-btn">View Business Card →</span>
+          <Link to={`/cards/${card.id}`} key={card.id} className="home-card">
+            <div className="home-card-logo">
+              {card.logoUrl
+                ? <img src={card.logoUrl} alt={card.name} />
+                : <div className="logo-fallback">{card.name[0]}</div>
+              }
+            </div>
+            <div className="home-card-info">
+              <h2>{card.name}</h2>
+              {card.description && <p>{card.description}</p>}
+              {card.phone && <span className="home-card-phone">{card.phone}</span>}
+              <div className="home-card-socials">
+                {Object.entries(card.socials || {}).filter(([, v]) => v).map(([key]) => {
+                  const Icon = SOCIAL_ICONS[key];
+                  return Icon ? <Icon key={key} className={`social-icon icon-${key}`} /> : null;
+                })}
+              </div>
+            </div>
           </Link>
         ))}
-        {cards.length === 0 && <p>No business cards found. Please add one in the Admin panel.</p>}
       </div>
+
+      {cards.length === 0 && (
+        <div className="empty-state">
+          <p>Hozircha kartalar yo'q.</p>
+        </div>
+      )}
     </div>
   );
 }

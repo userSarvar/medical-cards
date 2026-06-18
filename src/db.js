@@ -1,28 +1,50 @@
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import { db } from "./firebase";
+import {
+  collection, getDocs, addDoc, updateDoc,
+  deleteDoc, doc, getDoc
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { db, storage } from "./firebase";
 
-const COLLECTION_NAME = "business_cards";
+const COL = "business_cards";
 
-// Get all cards from the cloud
 export const getCards = async () => {
-  const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const snap = await getDocs(collection(db, COL));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 };
 
-// Add or Update a card
-export const saveCard = async (card) => {
+export const getCard = async (id) => {
+  const snap = await getDoc(doc(db, COL, id));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
+};
+
+export const saveCard = async (card, logoFile) => {
+  let logoUrl = card.logoUrl || "";
+
+  if (logoFile) {
+    const storageRef = ref(storage, `logos/${Date.now()}_${logoFile.name}`);
+    await uploadBytes(storageRef, logoFile);
+    logoUrl = await getDownloadURL(storageRef);
+  }
+
+  const data = { ...card, logoUrl };
+  delete data.id;
+
   if (card.id) {
-    // Update existing
-    const cardRef = doc(db, COLLECTION_NAME, card.id);
-    await updateDoc(cardRef, card);
+    await updateDoc(doc(db, COL, card.id), data);
+    return card.id;
   } else {
-    // Create new
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), card);
+    const docRef = await addDoc(collection(db, COL), data);
     return docRef.id;
   }
 };
 
-// Delete a card
-export const deleteCard = async (id) => {
-  await deleteDoc(doc(db, COLLECTION_NAME, id));
+export const deleteCard = async (id, logoUrl) => {
+  if (logoUrl) {
+    try {
+      const logoRef = ref(storage, logoUrl);
+      await deleteObject(logoRef);
+    } catch (_) {}
+  }
+  await deleteDoc(doc(db, COL, id));
 };
