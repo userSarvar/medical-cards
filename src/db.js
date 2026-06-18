@@ -1,8 +1,30 @@
+async function uploadToImgBB(file) {
+  const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await fetch(
+    `https://api.imgbb.com/1/upload?key=${apiKey}`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await response.json();
+
+  if (!data.success) {
+    throw new Error("Image upload failed");
+  }
+
+  return data.data.url;
+}
+
 import {
   collection, getDocs, addDoc, updateDoc,
   deleteDoc, doc, getDoc
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "./firebase";
 
 const COL = "business_cards";
@@ -22,9 +44,7 @@ export const saveCard = async (card, logoFile) => {
   let logoUrl = card.logoUrl || "";
 
   if (logoFile) {
-    const storageRef = ref(storage, `logos/${Date.now()}_${logoFile.name}`);
-    await uploadBytes(storageRef, logoFile);
-    logoUrl = await getDownloadURL(storageRef);
+    logoUrl = await uploadToImgBB(logoFile);
   }
 
   const data = { ...card, logoUrl };
@@ -39,12 +59,6 @@ export const saveCard = async (card, logoFile) => {
   }
 };
 
-export const deleteCard = async (id, logoUrl) => {
-  if (logoUrl) {
-    try {
-      const logoRef = ref(storage, logoUrl);
-      await deleteObject(logoRef);
-    } catch (_) {}
-  }
+export const deleteCard = async (id) => {
   await deleteDoc(doc(db, COL, id));
 };
