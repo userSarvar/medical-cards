@@ -123,7 +123,6 @@ export default function CardView() {
         )}
 
         <div className="cv-footer">
-          <Link to="/">← Barcha kompaniyalar</Link>
         </div>
       </div>
     </div>
