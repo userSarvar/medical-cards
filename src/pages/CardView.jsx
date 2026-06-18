@@ -42,6 +42,9 @@ export default function CardView() {
     getCard(id).then(data => {
       setCard(data);
       setLoading(false);
+      if (data) {
+        document.title = data.name;
+      }
     });
   }, [id]);
 
@@ -122,8 +125,7 @@ export default function CardView() {
           </div>
         )}
 
-        <div className="cv-footer">
-        </div>
+
       </div>
     </div>
   );
