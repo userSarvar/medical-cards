@@ -205,6 +205,7 @@ export default function AdminCardForm() {
                 { key: "cardBg", label: "Karta foni" },
                 { key: "btnColor", label: "Tugma rangi" },
                 { key: "iconColor", label: "Ikonka rangi" },
+                { key: "textColor", label: "Matn rangi" },
               ].map(({ key, label }) => (
                 <div className="form-field" key={key}>
                   <label>{label}</label>
