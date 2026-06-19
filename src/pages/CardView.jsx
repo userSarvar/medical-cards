@@ -58,8 +58,28 @@ export default function CardView() {
 
   const activeSocials = SOCIALS_CONFIG.filter(s => card.socials?.[s.key]);
 
+  function getThemeVars(theme) {
+    if (!theme || theme.mode === "white") return {};
+    if (theme.mode === "black") return {
+      "--cv-bg": "#0f0f0f",
+      "--cv-card-bg": "#1a1a1a",
+      "--cv-text": "#f3f4f6",
+      "--cv-text-2": "#9ca3af",
+      "--cv-border": "#2d2d2d",
+      "--cv-btn": "#2563eb",
+      "--cv-icon": "#60a5fa",
+    };
+    return {
+      "--cv-bg": theme.bg || "#f9fafb",
+      "--cv-card-bg": theme.cardBg || "#ffffff",
+      "--cv-btn": theme.btnColor || "#2563eb",
+      "--cv-icon": theme.iconColor || "#2563eb",
+    };
+  }
+
+
   return (
-    <div className="card-view-page">
+    <div className="card-view-page" style={getThemeVars(card.theme)}>
       <div className="card-view-wrap">
 
         {/* Header */}
