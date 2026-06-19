@@ -57,47 +57,7 @@ export default function AdminCardForm() {
   const handleHoursChange = (field, value) => {
     setForm(f => ({ ...f, workingHours: { ...f.workingHours, [field]: value } }));
   };
-  {/* Theme */}
-  <section className="form-section">
-    <h2>Tema</h2>
-    <div className="theme-options">
-      {["white", "black", "custom"].map(mode => (
-        <button
-          type="button"
-          key={mode}
-          className={`theme-opt ${form.theme?.mode === mode ? "active" : ""}`}
-          onClick={() => setForm(f => ({ ...f, theme: { ...f.theme, mode } }))}
-        >
-          <span className={`theme-dot theme-dot-${mode}`} />
-          {mode === "white" ? "Oq" : mode === "black" ? "Qora" : "Custom"}
-        </button>
-      ))}
-    </div>
-
-    {form.theme?.mode === "custom" && (
-      <div className="form-grid" style={{ marginTop: 16 }}>
-        {[
-          { key: "bg", label: "Sahifa foni" },
-          { key: "cardBg", label: "Karta foni" },
-          { key: "btnColor", label: "Tugma rangi" },
-          { key: "iconColor", label: "Ikonka rangi" },
-        ].map(({ key, label }) => (
-          <div className="form-field" key={key}>
-            <label>{label}</label>
-            <div className="color-pick-row">
-              <input
-                type="color"
-                value={form.theme?.[key] || "#ffffff"}
-                onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, [key]: e.target.value } }))}
-                className="color-input"
-              />
-              <span className="color-hex">{form.theme?.[key] || "#ffffff"}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </section>
+  
 
   const toggleDay = (dayIndex) => {
     const days = form.workingHours.days.includes(dayIndex)
@@ -219,6 +179,48 @@ export default function AdminCardForm() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Theme */}
+        <section className="form-section">
+          <h2>Tema</h2>
+          <div className="theme-options">
+            {["white", "black", "custom"].map(mode => (
+              <button
+                type="button"
+                key={mode}
+                className={`theme-opt ${form.theme?.mode === mode ? "active" : ""}`}
+                onClick={() => setForm(f => ({ ...f, theme: { ...f.theme, mode } }))}
+              >
+                <span className={`theme-dot theme-dot-${mode}`} />
+                {mode === "white" ? "Oq" : mode === "black" ? "Qora" : "Custom"}
+              </button>
+            ))}
+          </div>
+
+          {form.theme?.mode === "custom" && (
+            <div className="form-grid" style={{ marginTop: 16 }}>
+              {[
+                { key: "bg", label: "Sahifa foni" },
+                { key: "cardBg", label: "Karta foni" },
+                { key: "btnColor", label: "Tugma rangi" },
+                { key: "iconColor", label: "Ikonka rangi" },
+              ].map(({ key, label }) => (
+                <div className="form-field" key={key}>
+                  <label>{label}</label>
+                  <div className="color-pick-row">
+                    <input
+                      type="color"
+                      value={form.theme?.[key] || "#ffffff"}
+                      onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, [key]: e.target.value } }))}
+                      className="color-input"
+                    />
+                    <span className="color-hex">{form.theme?.[key] || "#ffffff"}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {error && <p className="error-msg">{error}</p>}
