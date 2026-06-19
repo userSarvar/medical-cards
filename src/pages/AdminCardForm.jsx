@@ -40,7 +40,7 @@ export default function AdminCardForm() {
     if (!isEdit) return;
     getCard(id).then(card => {
       if (!card) return navigate("/admin");
-      setForm({ ...emptyForm, ...card, workingHours: card.workingHours || emptyForm.workingHours, socials: card.socials || {} });
+      setForm({ ...emptyForm, ...card, workingHours: card.workingHours || emptyForm.workingHours, socials: card.socials || {}, theme: card.theme || { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "" } || emptyForm.theme });
       setLogoPreview(card.logoUrl || "");
     });
   }, [id]);
