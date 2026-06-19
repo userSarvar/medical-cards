@@ -1,3 +1,5 @@
+import { setDoc } from "firebase/firestore";
+
 async function uploadToImgBB(file) {
   const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
 
@@ -49,14 +51,24 @@ export const saveCard = async (card, logoFile) => {
   }
 
   const data = { ...card, logoUrl };
+  const docId = data.customId || undefined;
+
   delete data.id;
+  delete data.customId;
+
+
 
   if (card.id) {
     await updateDoc(doc(db, COL, card.id), data);
     return card.id;
   } else {
-    const docRef = await addDoc(collection(db, COL), data);
-    return docRef.id;
+    if (docId) {
+      await setDoc(doc(db, COL, docId), data);
+      return docId;
+    } else {
+      const docRef = await addDoc(collection(db, COL), data);
+      return docRef.id;
+    }
   }
 };
 

@@ -158,8 +158,6 @@ export default function CardView() {
             </a>
           </div>
         )}
-
-
       </div>
     </div>
   );

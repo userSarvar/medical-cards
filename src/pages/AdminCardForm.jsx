@@ -20,6 +20,8 @@ const emptyForm = {
   phone: "",
   address: "",
   logoUrl: "",
+  active: true,
+  customId: "",
   workingHours: { from: "09:00", to: "18:00", days: [0, 1, 2, 3, 4] },
   socials: {},
   theme: { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "", textColor: "", font: "Inter" },
@@ -235,6 +237,32 @@ export default function AdminCardForm() {
                 "Ubuntu", "Oswald", "Source Sans 3", "PT Sans", "Noto Sans",
               ].map(f => <option key={f} value={f}>{f}</option>)}
             </select>
+          </div>
+        </section>
+        <section>
+          <div className="form-field full-width">
+            <label>Maxsus ID (ixtiyoriy)</label>
+            <input
+              name="customId"
+              value={form.customId || ""}
+              onChange={handleChange}
+              placeholder="masalan: remax yoki uzum-market"
+              disabled={isEdit}
+            />
+            {!isEdit && <small style={{color:"var(--text-2)"}}>Bir marta belgilanadi, keyinchalik o'zgartirib bo'lmaydi</small>}
+          </div>
+
+          <div className="form-field full-width">
+            <label>Holati</label>
+            <div className="toggle-row">
+              <div
+                className={`toggle ${form.active ? "on" : ""}`}
+                onClick={() => setForm(f => ({ ...f, active: !f.active }))}
+              >
+                <div className="toggle-knob" />
+              </div>
+              <span>{form.active ? "Faol" : "Nofaol"}</span>
+            </div>
           </div>
         </section>
 

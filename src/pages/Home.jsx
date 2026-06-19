@@ -19,7 +19,7 @@ export default function Home() {
 
   useEffect(() => {
     getCards().then(data => {
-      setCards(data);
+      setCards(data.filter(c => c.active !== false));
       setLoading(false);
     });
   }, []);
