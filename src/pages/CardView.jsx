@@ -1,3 +1,4 @@
+
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCard } from "../db";
@@ -50,12 +51,13 @@ export default function CardView() {
 
 
   useEffect(() => {
+    if (!card) return;
     const font = card.theme?.font || "Inter";
     const link = document.createElement("link");
     link.href = `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, "+")}:wght@400;500;600;700&display=swap`;
     link.rel = "stylesheet";
     document.head.appendChild(link);
-  }, [card]);
+}, [card]);
 
 
   if (loading) return <div className="loading-screen">Yuklanmoqda...</div>;
