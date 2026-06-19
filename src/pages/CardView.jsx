@@ -48,6 +48,16 @@ export default function CardView() {
     });
   }, [id]);
 
+
+  useEffect(() => {
+    const font = card.theme?.font || "Inter";
+    const link = document.createElement("link");
+    link.href = `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, "+")}:wght@400;500;600;700&display=swap`;
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+  }, [card]);
+
+
   if (loading) return <div className="loading-screen">Yuklanmoqda...</div>;
   if (!card) return (
     <div className="not-found">
@@ -61,6 +71,7 @@ export default function CardView() {
   function getThemeVars(theme) {
     if (!theme || theme.mode === "white") return {};
     if (theme.mode === "black") return {
+      "--cv-text": theme.textColor || "#f3f4f6",
       "--cv-bg": "#0f0f0f",
       "--cv-card-bg": "#1a1a1a",
       "--cv-text": "#f3f4f6",
@@ -70,6 +81,7 @@ export default function CardView() {
       "--cv-icon": "#60a5fa",
     };
     return {
+      "--cv-text": theme.textColor || "#111827",
       "--cv-bg": theme.bg || "#f9fafb",
       "--cv-card-bg": theme.cardBg || "#ffffff",
       "--cv-btn": theme.btnColor || "#2563eb",
@@ -79,7 +91,7 @@ export default function CardView() {
 
 
   return (
-    <div className="card-view-page" style={getThemeVars(card.theme)}>
+    <div className="card-view-page" style={{ ...getThemeVars(card.theme), fontFamily: `'${card.theme?.font || "Inter"}', sans-serif` }}>
       <div className="card-view-wrap">
 
         {/* Header */}

@@ -22,7 +22,7 @@ const emptyForm = {
   logoUrl: "",
   workingHours: { from: "09:00", to: "18:00", days: [0, 1, 2, 3, 4] },
   socials: {},
-  theme: { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "" },
+  theme: { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "", textColor: "", font: "Inter" },
 };
 
 export default function AdminCardForm() {
@@ -221,6 +221,20 @@ export default function AdminCardForm() {
               ))}
             </div>
           )}
+          {/* Font picker — always visible regardless of theme mode */}
+          <div className="form-field" style={{ marginTop: 16 }}>
+            <label>Shrift (Font)</label>
+            <select
+              value={form.theme?.font || "Inter"}
+              onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, font: e.target.value } }))}
+            >
+              {[
+                "Inter", "Roboto", "Open Sans", "Montserrat", "Poppins",
+                "Lato", "Nunito", "Raleway", "Playfair Display", "Merriweather",
+                "Ubuntu", "Oswald", "Source Sans 3", "PT Sans", "Noto Sans",
+              ].map(f => <option key={f} value={f}>{f}</option>)}
+            </select>
+          </div>
         </section>
 
         {error && <p className="error-msg">{error}</p>}

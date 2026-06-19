@@ -2,6 +2,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
+  --cv-text: #111827;
+  --cv-text-2: #6b7280;
   --cv-bg: #f0f6ff;
   --cv-card-bg: #ffffff;
   --cv-text: #111827;
@@ -442,8 +444,8 @@ textarea { resize: vertical; }
   justify-content: center;
   margin: 0 auto 16px;
 }
-.cv-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-.cv-desc { font-size: 14px; color: var(--text-2); line-height: 1.5; }
+.cv-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: var(--cv-text); }
+.cv-desc { font-size: 14px; color: var(--cv-text-2); line-height: 1.5; }
 
 .cv-section {
   padding: 20px 28px;
@@ -457,7 +459,7 @@ textarea { resize: vertical; }
   align-items: flex-start;
   gap: 12px;
   font-size: 14px;
-  color: var(--text);
+  color: var(--cv-text);
 }
 .cv-contact-icon { color: var(--cv-icon); font-size: 16px; margin-top: 2px; flex-shrink: 0; }
 a.cv-contact-row { color: var(--brand); }
