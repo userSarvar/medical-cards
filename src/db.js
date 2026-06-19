@@ -1,4 +1,18 @@
-import { setDoc } from "firebase/firestore";
+import {
+  collection, getDocs, addDoc, updateDoc,
+  deleteDoc, doc, getDoc, setDoc
+} from "firebase/firestore";
+import { db } from "./firebase";
+
+export function parseLatLng(url) {
+  if (!url) return null;
+  // matches @lat,lng or ?q=lat,lng or ll=lat,lng
+  const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) ||
+                url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/) ||
+                url.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (!match) return null;
+  return { lat: match[1], lng: match[2] };
+}
 
 async function uploadToImgBB(file) {
   const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
@@ -23,11 +37,7 @@ async function uploadToImgBB(file) {
   return data.data.url;
 }
 
-import {
-  collection, getDocs, addDoc, updateDoc,
-  deleteDoc, doc, getDoc
-} from "firebase/firestore";
-import { db } from "./firebase";
+
 
 
 const COL = "business_cards";

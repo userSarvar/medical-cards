@@ -1,7 +1,7 @@
 
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getCard } from "../db";
+import { getCard, parseLatLng } from "../db";
 import {
   FaInstagram, FaTelegram, FaYoutube, FaTiktok,
   FaFacebook, FaGlobe, FaWhatsapp, FaPhone, FaMapMarkerAlt,
@@ -19,6 +19,8 @@ const SOCIALS_CONFIG = [
 ];
 
 const DAYS_UZ = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
+
+const [navOpen, setNavOpen] = useState(false);
 
 function getWorkingDaysText(days) {
   if (!days || days.length === 0) return "";
@@ -90,6 +92,50 @@ export default function CardView() {
       "--cv-icon": theme.iconColor || "#2563eb",
     };
   }
+  const coords = parseLatLng(card.location?.mapsUrl);
+
+  const NAV_APPS = coords ? [
+    {
+      name: "Google Maps",
+      icon: "🗺️",
+      url: `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}`,
+    },
+    {
+      name: "Yandex Navigator",
+      icon: "🧭",
+      url: `yandexnavi://build_route_on_map?lat_to=${coords.lat}&lon_to=${coords.lng}`,
+      fallback: `https://yandex.com/maps/?rtext=~${coords.lat},${coords.lng}&rtt=auto`,
+    },
+    {
+      name: "Yandex Maps",
+      icon: "🗾",
+      url: `yandexmaps://maps.yandex.ru/?pt=${coords.lng},${coords.lat}&z=16`,
+      fallback: `https://yandex.com/maps/?pt=${coords.lng},${coords.lat}&z=16`,
+    },
+    {
+      name: "2GIS",
+      icon: "📍",
+      url: `dgis://2gis.ru/routeSearch/rsType/car/to/${coords.lng},${coords.lat}`,
+      fallback: `https://2gis.ru/directions/points/?finish=${coords.lng},${coords.lat}`,
+    },
+    {
+      name: "Apple Maps",
+      icon: "🍎",
+      url: `maps://maps.apple.com/?daddr=${coords.lat},${coords.lng}`,
+      fallback: `https://maps.apple.com/?daddr=${coords.lat},${coords.lng}`,
+    },
+  ] : [];
+
+  const openNav = (app) => {
+    if (app.fallback) {
+      // try deep link, fall back after 1.5s
+      window.location.href = app.url;
+      setTimeout(() => { window.open(app.fallback, "_blank"); }, 1500);
+    } else {
+      window.open(app.url, "_blank");
+    }
+    setNavOpen(false);
+  };
 
 
   return (
@@ -158,6 +204,36 @@ export default function CardView() {
             </a>
           </div>
         )}
+        {/* Location & Navigation */}
+        {card.location?.address && (
+          <div className="cv-cta">
+            {coords && (
+              <button className="btn-nav-big" onClick={() => setNavOpen(true)}>
+                <FaMapMarkerAlt /> Yo'nalish olish
+              </button>
+          )}
+        </div>
+      )}
+
+      {/* Nav App Sheet */}
+      {navOpen && (
+        <div className="nav-overlay" onClick={() => setNavOpen(false)}>
+          <div className="nav-sheet" onClick={e => e.stopPropagation()}>
+            <div className="nav-sheet-handle" />
+            <h3>Navigatsiya ilovasini tanlang</h3>
+            <p className="nav-address">{card.location.address}</p>
+            <div className="nav-apps">
+              {NAV_APPS.map(app => (
+                <button key={app.name} className="nav-app-btn" onClick={() => openNav(app)}>
+                  <span className="nav-app-icon">{app.icon}</span>
+                  <span>{app.name}</span>
+                </button>
+              ))}
+            </div>
+            <button className="nav-cancel" onClick={() => setNavOpen(false)}>Bekor qilish</button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

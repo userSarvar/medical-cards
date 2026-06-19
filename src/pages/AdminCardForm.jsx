@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCard, saveCard } from "../db";
+import { getCard, saveCard, parseLatLng } from "../db";
 
 const SOCIALS = [
   { key: "instagram", label: "Instagram", placeholder: "username" },
@@ -25,6 +25,7 @@ const emptyForm = {
   workingHours: { from: "09:00", to: "18:00", days: [0, 1, 2, 3, 4] },
   socials: {},
   theme: { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "", textColor: "", font: "Inter" },
+  location: { address: "", mapsUrl: "" },
 };
 
 export default function AdminCardForm() {
@@ -42,7 +43,7 @@ export default function AdminCardForm() {
     if (!isEdit) return;
     getCard(id).then(card => {
       if (!card) return navigate("/admin");
-      setForm({ ...emptyForm, ...card, workingHours: card.workingHours || emptyForm.workingHours, socials: card.socials || {}, theme: card.theme || { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "" } || emptyForm.theme });
+      setForm({ ...emptyForm, ...card, workingHours: card.workingHours || emptyForm.workingHours, socials: card.socials || {}, theme: card.theme || { mode: "white", bg: "", cardBg: "", btnColor: "", iconColor: "" } || emptyForm.theme, location: card.location || { address: "", mapsUrl: "" }, });
       setLogoPreview(card.logoUrl || "");
     });
   }, [id]);
@@ -182,6 +183,36 @@ export default function AdminCardForm() {
             ))}
           </div>
         </section>
+        {/* Location */}
+        <section className="form-section">
+          <h2>Manzil va Navigatsiya</h2>
+          <div className="form-grid">
+            <div className="form-field full-width">
+            <label>Ko'rsatiladigan manzil</label>
+            <input
+              name="locationAddress"
+              value={form.location?.address || ""}
+              onChange={e => setForm(f => ({ ...f, location: { ...f.location, address: e.target.value } }))}
+              placeholder="Toshkent, Chilonzor tumani, 5-uy"
+            />
+          </div>
+          <div className="form-field full-width">
+            <label>Google Maps havolasi</label>
+            <input
+              name="locationUrl"
+              value={form.location?.mapsUrl || ""}
+              onChange={e => setForm(f => ({ ...f, location: { ...f.location, mapsUrl: e.target.value } }))}
+              placeholder="https://maps.google.com/..."
+            />
+            {form.location?.mapsUrl && (() => {
+              const coords = parseLatLng(form.location.mapsUrl);
+              return coords
+                ? <small style={{ color: "#16a34a", marginTop: 4, display: "block" }}>✓ Koordinatlar topildi: {coords.lat}, {coords.lng}</small>
+                : <small style={{ color: "#ef4444", marginTop: 4, display: "block" }}>✗ Koordinatlar topilmadi. To'g'ri Google Maps havolasini kiriting</small>
+            })()}
+          </div>
+        </div>
+      </section>
 
         {/* Theme */}
         <section className="form-section">
