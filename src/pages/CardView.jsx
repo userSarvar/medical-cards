@@ -52,48 +52,13 @@ function getThemeVars(theme) {
   };
 }
 
-// Nav app definitions — built from coords
-function buildNavApps(coords) {
-  const { lat, lng } = coords;
-  return [
-    {
-      name: "Google Maps",
-      emoji: "🗺️",
-      url: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-      fallback: null,
-    },
-    {
-      name: "Yandex Navigator",
-      emoji: "🧭",
-      url: `yandexnavi://build_route_on_map?lat_to=${lat}&lon_to=${lng}`,
-      fallback: `https://yandex.com/maps/?rtext=~${lat},${lng}&rtt=auto`,
-    },
-    {
-      name: "Yandex Maps",
-      emoji: "🗾",
-      url: `yandexmaps://maps.yandex.ru/?pt=${lng},${lat}&z=16`,
-      fallback: `https://yandex.com/maps/?pt=${lng},${lat}&z=16`,
-    },
-    {
-      name: "2GIS",
-      emoji: "📍",
-      url: `dgis://2gis.ru/routeSearch/rsType/car/to/${lng},${lat}`,
-      fallback: `https://2gis.ru/directions/points/?finish=${lng},${lat}`,
-    },
-    {
-      name: "Apple Maps",
-      emoji: "🍎",
-      url: `maps://maps.apple.com/?daddr=${lat},${lng}`,
-      fallback: `https://maps.apple.com/?daddr=${lat},${lng}`,
-    },
-  ];
-}
+
 
 export default function CardView() {
   const { id } = useParams();
   const [card, setCard]       = useState(null);
   const [loading, setLoading] = useState(true);
-  const [navOpen, setNavOpen] = useState(false);
+
 
   useEffect(() => {
     getCard(id).then(data => {
@@ -141,17 +106,9 @@ export default function CardView() {
   // ── ACTIVE CARD ──
   const activeSocials = SOCIALS_CONFIG.filter(s => card.socials?.[s.key]);
   const coords        = parseLatLng(card.location?.mapsUrl);
-  const navApps       = coords ? buildNavApps(coords) : [];
-
-  const openNav = (app) => {
-    setNavOpen(false);
-    if (app.fallback) {
-      window.location.href = app.url;
-      setTimeout(() => { window.open(app.fallback, "_blank"); }, 1500);
-    } else {
-      window.open(app.url, "_blank");
-    }
-  };
+  const googleMapsUrl = coords
+    ? `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}`
+    : null;
 
   return (
     <div
@@ -226,39 +183,15 @@ export default function CardView() {
         )}
 
         {/* Navigation CTA */}
-        {coords && (
+        {googleMapsUrl && (
           <div className="cv-cta">
-            <button className="btn-nav-big" onClick={() => setNavOpen(true)}>
+            <a href={googleMapsUrl} target="_blank" rel="noreferrer" className="btn-nav-big">
               <FaMapMarkerAlt /> Yo'nalish olish
-            </button>
+            </a>
           </div>
         )}
 
       </div>
-
-      {/* ── Nav Bottom Sheet (Telegram-style) ── */}
-      {navOpen && (
-        <div className="nav-overlay" onClick={() => setNavOpen(false)}>
-          <div className="nav-sheet" onClick={e => e.stopPropagation()}>
-            <div className="nav-sheet-handle" />
-            <p className="nav-sheet-title">Navigatsiya ilovasini tanlang</p>
-            {card.location?.address && (
-              <p className="nav-address">{card.location.address}</p>
-            )}
-            <div className="nav-apps-grid">
-              {navApps.map(app => (
-                <button key={app.name} className="nav-app-btn" onClick={() => openNav(app)}>
-                  <span className="nav-app-emoji">{app.emoji}</span>
-                  <span className="nav-app-name">{app.name}</span>
-                </button>
-              ))}
-            </div>
-            <button className="nav-cancel" onClick={() => setNavOpen(false)}>
-              Bekor qilish
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

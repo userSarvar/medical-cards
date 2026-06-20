@@ -115,7 +115,7 @@ export default function AdminCardForm() {
               <input type="file" accept="image/*" onChange={handleLogoChange} hidden />
             </label>
           </div>
-          <h2>Holati</h2>
+          <label className="form-field full-width">Holati</label>
           <div className="form-field full-width">
             <div className="toggle-row">
               <div
