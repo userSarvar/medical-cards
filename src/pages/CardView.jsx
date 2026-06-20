@@ -20,7 +20,7 @@ const SOCIALS_CONFIG = [
 
 const DAYS_UZ = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
 
-const [navOpen, setNavOpen] = useState(false);
+
 
 function getWorkingDaysText(days) {
   if (!days || days.length === 0) return "";
@@ -40,6 +40,7 @@ export default function CardView() {
   const { id } = useParams();
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
     getCard(id).then(data => {
