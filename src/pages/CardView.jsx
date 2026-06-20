@@ -53,6 +53,32 @@ function getThemeVars(theme) {
 }
 
 
+function PartnersDropdown({ logos }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="cv-partners-dropdown">
+      <button className="cv-partners-toggle" onClick={() => setOpen(o => !o)}>
+        <span>Hamkorlar</span>
+        <span className="cv-partners-sign">{open ? "−" : "+"}</span>
+      </button>
+      {open && (
+        <div className="cv-partners-grid">
+          {logos.map((p, i) =>
+            p.link ? (
+              <a key={i} href={p.link} target="_blank" rel="noreferrer" className="cv-partner-item" title={p.label}>
+                <img src={p.logoUrl} alt={p.label || `Partner ${i + 1}`} />
+              </a>
+            ) : (
+              <div key={i} className="cv-partner-item" title={p.label}>
+                <img src={p.logoUrl} alt={p.label || `Partner ${i + 1}`} />
+              </div>
+            )
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function CardView() {
   const { id } = useParams();
@@ -174,30 +200,14 @@ export default function CardView() {
         )}
 
         {/* Partner Logos */}
-        {form => null /* placeholder */}
         {(() => {
           const logos = card.partnerLogos || [];
           const max   = card.partnerLogosMax ?? 3;
           const shown = logos.slice(0, max);
           if (shown.length === 0) return null;
-          return (
-            <div className="cv-section cv-partners">
-              <div className="cv-partners-grid">
-                {shown.map((p, i) =>
-                  p.link ? (
-                    <a key={i} href={p.link} target="_blank" rel="noreferrer" className="cv-partner-item" title={p.label}>
-                      <img src={p.logoUrl} alt={p.label || `Partner ${i + 1}`} />
-                    </a>
-                  ) : (
-                    <div key={i} className="cv-partner-item" title={p.label}>
-                      <img src={p.logoUrl} alt={p.label || `Partner ${i + 1}`} />
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          );
+          return <PartnersDropdown logos={shown} />;
         })()}
+
 
         {/* Call CTA */}
         {card.phone && (

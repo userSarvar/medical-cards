@@ -181,6 +181,19 @@ export default function AdminCardForm() {
               <label>Tavsif</label>
               <textarea name="description" value={form.description} onChange={handleChange} rows={3} placeholder="Kompaniya haqida qisqacha..." />
             </div>
+            <div className="form-field" style={{ marginTop: 16 }}>
+              <label>Shrift (Font)</label>
+              <select
+                value={form.theme?.font || "Inter"}
+                onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, font: e.target.value } }))}
+              >
+                {[
+                  "Inter","Roboto","Open Sans","Montserrat","Poppins",
+                  "Lato","Nunito","Raleway","Playfair Display","Merriweather",
+                  "Ubuntu","Oswald","Source Sans 3","PT Sans","Noto Sans",
+                ].map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
             <div className="form-field full-width">
               <label>Manzil</label>
               <textarea name="address" value={form.address} onChange={handleChange} rows={2} placeholder="Toshkent, Chilonzor tumani..." />
@@ -371,19 +384,7 @@ export default function AdminCardForm() {
             </div>
           )}
 
-          <div className="form-field" style={{ marginTop: 16 }}>
-            <label>Shrift (Font)</label>
-            <select
-              value={form.theme?.font || "Inter"}
-              onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, font: e.target.value } }))}
-            >
-              {[
-                "Inter","Roboto","Open Sans","Montserrat","Poppins",
-                "Lato","Nunito","Raleway","Playfair Display","Merriweather",
-                "Ubuntu","Oswald","Source Sans 3","PT Sans","Noto Sans",
-              ].map(f => <option key={f} value={f}>{f}</option>)}
-            </select>
-          </div>
+          
         </section>
 
         {/* Custom ID */}
