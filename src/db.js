@@ -38,7 +38,7 @@ export function parseLatLng(input) {
   return null; // short links like maps.app.goo.gl can't be resolved client-side
 }
 
-async function uploadToImgBB(file) {
+export async function uploadToImgBB(file) {
   const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
   const formData = new FormData();
   formData.append("image", file);

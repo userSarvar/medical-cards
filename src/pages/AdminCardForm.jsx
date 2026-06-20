@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCard, saveCard, parseLatLng } from "../db";
+import { getCard, saveCard, parseLatLng, uploadToImgBB } from "../db";
 
 const SOCIALS = [
   { key: "instagram", label: "Instagram",  placeholder: "username" },
@@ -30,6 +30,7 @@ const emptyForm = {
   location: { address: "", mapsUrl: "" },
   partnerLogos: [],
   partnerLogosMax: 3,
+  coverUrl: "",
 };
 
 export default function AdminCardForm() {
@@ -40,6 +41,8 @@ export default function AdminCardForm() {
   const [form, setForm]           = useState(emptyForm);
   const [logoFile, setLogoFile]   = useState(null);
   const [logoPreview, setLogoPreview] = useState("");
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
   const [saving, setSaving]       = useState(false);
   const [error, setError]         = useState("");
 
@@ -59,8 +62,10 @@ export default function AdminCardForm() {
         location:     card.location     || { address: "", mapsUrl: "" },
         partnerLogos:    card.partnerLogos    || [],
         partnerLogosMax: card.partnerLogosMax ?? 3,
+        coverUrl:        card.coverUrl        || "",
       });
       setLogoPreview(card.logoUrl || "");
+      setCoverPreview(card.coverUrl || "");
     });
   }, [id]);
 
@@ -83,6 +88,13 @@ export default function AdminCardForm() {
     if (!file) return;
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
+  };
+
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
   };
 
   // ── Partner logos helpers ──
@@ -115,8 +127,10 @@ export default function AdminCardForm() {
     try {
       // Strip _file from partnerLogos — saveCard handles actual upload
       const cleanPartners = form.partnerLogos.map(({ _file, ...rest }) => rest);
+      let coverUrl = form.coverUrl || "";
+      if (coverFile) coverUrl = await uploadToImgBB(coverFile);
       await saveCard(
-        { ...form, partnerLogos: cleanPartners, id: id || undefined },
+        { ...form, coverUrl, partnerLogos: cleanPartners, id: id || undefined },
         logoFile,
         form.partnerLogos.map(p => p._file || null),
       );
@@ -137,6 +151,28 @@ export default function AdminCardForm() {
       </div>
 
       <form className="card-form" onSubmit={handleSubmit}>
+
+        <section className="form-section">
+          <h2>Cover Rasm</h2>
+          <div className="cover-upload-area">
+            {coverPreview
+              ? <img src={coverPreview} alt="Cover" className="cover-preview" />
+              : <div className="cover-placeholder">Cover rasm yo'q (ixtiyoriy)</div>
+            }
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <label className="btn btn-upload">
+                Cover yuklash
+                <input type="file" accept="image/*" onChange={handleCoverChange} hidden />
+              </label>
+              {coverPreview && (
+                <button type="button" className="btn btn-danger btn-sm"
+                  onClick={() => { setCoverFile(null); setCoverPreview(""); setForm(f => ({ ...f, coverUrl: "" })); }}>
+                  O'chirish
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
 
         {/* Logo + Status */}
         <section className="form-section">
@@ -180,19 +216,6 @@ export default function AdminCardForm() {
             <div className="form-field full-width">
               <label>Tavsif</label>
               <textarea name="description" value={form.description} onChange={handleChange} rows={3} placeholder="Kompaniya haqida qisqacha..." />
-            </div>
-            <div className="form-field" style={{ marginTop: 16 }}>
-              <label>Shrift (Font)</label>
-              <select
-                value={form.theme?.font || "Inter"}
-                onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, font: e.target.value } }))}
-              >
-                {[
-                  "Inter","Roboto","Open Sans","Montserrat","Poppins",
-                  "Lato","Nunito","Raleway","Playfair Display","Merriweather",
-                  "Ubuntu","Oswald","Source Sans 3","PT Sans","Noto Sans",
-                ].map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
             </div>
             <div className="form-field full-width">
               <label>Manzil</label>
@@ -384,7 +407,19 @@ export default function AdminCardForm() {
             </div>
           )}
 
-          
+          <div className="form-field" style={{ marginTop: 16 }}>
+            <label>Shrift (Font)</label>
+            <select
+              value={form.theme?.font || "Inter"}
+              onChange={e => setForm(f => ({ ...f, theme: { ...f.theme, font: e.target.value } }))}
+            >
+              {[
+                "Inter","Roboto","Open Sans","Montserrat","Poppins",
+                "Lato","Nunito","Raleway","Playfair Display","Merriweather",
+                "Ubuntu","Oswald","Source Sans 3","PT Sans","Noto Sans",
+              ].map(f => <option key={f} value={f}>{f}</option>)}
+            </select>
+          </div>
         </section>
 
         {/* Custom ID */}
