@@ -4,41 +4,52 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-export function parseLatLng(url) {
-  if (!url) return null;
-  // matches @lat,lng or ?q=lat,lng or ll=lat,lng
-  const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) ||
-                url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/) ||
-                url.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
-  if (!match) return null;
-  return { lat: match[1], lng: match[2] };
+/**
+ * Parses lat/lng from:
+ * - Raw coords: "40.136731, 67.823765" or "40.136731,67.823765"
+ * - Full Google Maps URL: https://maps.google.com/...@lat,lng...
+ * - maps.app.goo.gl short links: we extract coords if embedded, otherwise null
+ */
+export function parseLatLng(input) {
+  if (!input) return null;
+
+  const str = input.trim();
+
+  // 1. Raw coordinates: "40.136731, 67.823765"
+  const rawCoords = str.match(/^(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)$/);
+  if (rawCoords) {
+    return { lat: rawCoords[1], lng: rawCoords[2] };
+  }
+
+  // 2. Full URL patterns
+  const patterns = [
+    /@(-?\d+\.\d+),(-?\d+\.\d+)/,           // @lat,lng
+    /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,      // ?q=lat,lng
+    /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,          // ll=lat,lng
+    /place\/(-?\d+\.\d+),(-?\d+\.\d+)/,      // place/lat,lng
+    /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,        // !3d lat !4d lng (embedded maps)
+  ];
+
+  for (const pattern of patterns) {
+    const match = str.match(pattern);
+    if (match) return { lat: match[1], lng: match[2] };
+  }
+
+  return null; // short links like maps.app.goo.gl can't be resolved client-side
 }
 
 async function uploadToImgBB(file) {
   const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
-
   const formData = new FormData();
   formData.append("image", file);
-
-  const response = await fetch(
-    `https://api.imgbb.com/1/upload?key=${apiKey}`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
-
+  const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+    method: "POST",
+    body: formData,
+  });
   const data = await response.json();
-
-  if (!data.success) {
-    throw new Error("Image upload failed");
-  }
-
+  if (!data.success) throw new Error("Image upload failed");
   return data.data.url;
 }
-
-
-
 
 const COL = "business_cards";
 
@@ -55,18 +66,13 @@ export const getCard = async (id) => {
 
 export const saveCard = async (card, logoFile) => {
   let logoUrl = card.logoUrl || "";
-
   if (logoFile) {
     logoUrl = await uploadToImgBB(logoFile);
   }
-
   const data = { ...card, logoUrl };
   const docId = data.customId || undefined;
-
   delete data.id;
   delete data.customId;
-
-
 
   if (card.id) {
     await updateDoc(doc(db, COL, card.id), data);

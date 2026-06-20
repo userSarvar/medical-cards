@@ -82,6 +82,7 @@ export default function AdminCardForm() {
     setSaving(true);
     try {
       await saveCard({ ...form, id: id || undefined }, logoFile);
+      console.log("Saving:", { ...form, id: id || undefined });
       navigate("/admin");
     } catch (err) {
       setError("Saqlashda xatolik yuz berdi. Qayta urinib ko'ring.");
@@ -113,6 +114,18 @@ export default function AdminCardForm() {
               Logo yuklash
               <input type="file" accept="image/*" onChange={handleLogoChange} hidden />
             </label>
+          </div>
+          <h2>Holati</h2>
+          <div className="form-field full-width">
+            <div className="toggle-row">
+              <div
+                className={`toggle ${form.active ? "on" : ""}`}
+                onClick={() => setForm(f => ({ ...f, active: !f.active }))}
+              >
+                <div className="toggle-knob" />
+              </div>
+              <span>{form.active ? "Faol" : "Nofaol"}</span>
+            </div>
           </div>
         </section>
 
@@ -283,18 +296,7 @@ export default function AdminCardForm() {
             {!isEdit && <small style={{color:"var(--text-2)"}}>Bir marta belgilanadi, keyinchalik o'zgartirib bo'lmaydi</small>}
           </div>
 
-          <div className="form-field full-width">
-            <label>Holati</label>
-            <div className="toggle-row">
-              <div
-                className={`toggle ${form.active ? "on" : ""}`}
-                onClick={() => setForm(f => ({ ...f, active: !f.active }))}
-              >
-                <div className="toggle-knob" />
-              </div>
-              <span>{form.active ? "Faol" : "Nofaol"}</span>
-            </div>
-          </div>
+          
         </section>
 
         {error && <p className="error-msg">{error}</p>}
