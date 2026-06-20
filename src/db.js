@@ -64,12 +64,25 @@ export const getCard = async (id) => {
   return { id: snap.id, ...snap.data() };
 };
 
-export const saveCard = async (card, logoFile) => {
+export const saveCard = async (card, logoFile, partnerLogoFiles = []) => {
   let logoUrl = card.logoUrl || "";
   if (logoFile) {
     logoUrl = await uploadToImgBB(logoFile);
   }
-  const data = { ...card, logoUrl };
+
+  // Upload any partner logos that came as File objects
+  const partnerLogos = await Promise.all(
+    (card.partnerLogos || []).map(async (p, i) => {
+      const file = partnerLogoFiles[i];
+      if (file instanceof File) {
+        const url = await uploadToImgBB(file);
+        return { ...p, logoUrl: url };
+      }
+      return p;
+    })
+  );
+
+  const data = { ...card, logoUrl, partnerLogos };
   const docId = data.customId || undefined;
   delete data.id;
   delete data.customId;

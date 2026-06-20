@@ -173,6 +173,32 @@ export default function CardView() {
           </div>
         )}
 
+        {/* Partner Logos */}
+        {form => null /* placeholder */}
+        {(() => {
+          const logos = card.partnerLogos || [];
+          const max   = card.partnerLogosMax ?? 3;
+          const shown = logos.slice(0, max);
+          if (shown.length === 0) return null;
+          return (
+            <div className="cv-section cv-partners">
+              <div className="cv-partners-grid">
+                {shown.map((p, i) =>
+                  p.link ? (
+                    <a key={i} href={p.link} target="_blank" rel="noreferrer" className="cv-partner-item" title={p.label}>
+                      <img src={p.logoUrl} alt={p.label || `Partner ${i + 1}`} />
+                    </a>
+                  ) : (
+                    <div key={i} className="cv-partner-item" title={p.label}>
+                      <img src={p.logoUrl} alt={p.label || `Partner ${i + 1}`} />
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Call CTA */}
         {card.phone && (
           <div className="cv-cta">
